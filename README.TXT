@@ -1,7 +1,6 @@
 Tolya Borisenkov shbars@bk.ru 2017
 
-Raspberry Pi NAS Project
-
+Raspberry Pi NAS-WiFi router Project
 
 First:
 install wiringpi rasberrypi library.
