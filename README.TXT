@@ -4,7 +4,9 @@ Raspberry Pi NAS-WiFi router Project
 
 First:
 install wiringpi rasberrypi library.
+For debian based os:
 apt install wiringpi
+
 and edit config.h
 
 Then to compile type:

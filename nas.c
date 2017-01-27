@@ -140,8 +140,7 @@ if (tm_delay <= BLINK_DELAY && blink_flag) {
 //printf("on %u\n",tm_delay);
     if(tm_delay == BLINK_DELAY) blink_flag = 0;
 }
-else if (!blink_flag)
-{
+else if (!blink_flag) {
     digitalWrite(BLINK_LED, 0);
     tm_delay--;
 //printf("off %u\n",tm_delay);
@@ -156,14 +155,14 @@ else if (!blink_flag)
     break;
     case UP:
         if (i < DISP_RANGE) {
-            i=i+5;
+            i += 5;
 	    softPwmWrite (DISP_LED, i) ;
         }
         buttonRes = -1;
     break;
     case DOWN:
         if (i > 0) {
-            i=i-5;
+            i -= 5;
 	    i = i < 0 ? 0 : i;
 	    softPwmWrite (DISP_LED, i) ;
         }

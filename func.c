@@ -55,7 +55,6 @@ struct ifaddrs *ifaddr, *ifa;
 int family, s, n;
 char host[NI_MAXHOST];
 IFINFO *ifinfo = (IFINFO*)malloc(sizeof(IFINFO));
-
 ifinfo->ip = NULL;
 
     if (getifaddrs(&ifaddr) == -1) {
@@ -94,7 +93,7 @@ int YorN (int fd, int x, int y) {
 
     lcdPosition (fd, x+1, y) ;
     lcdCursorBlink (fd, 1) ;
-    for(;;){
+    for(;;) {
         if (buttonRes == LEFT) {
 	    lcdPosition (fd, x, y) ;
 	    lcdPrintf (fd, "N") ;
@@ -114,7 +113,6 @@ int YorN (int fd, int x, int y) {
 	}
     delay(100);
     }
-
 }
 
 // UP or DOWN LCD set 
@@ -141,7 +139,6 @@ int UPorDOWN (int fd, int x) {
 	}
 delay(100);
     }
-
 }
 
 void ledOff (int fd, int min, int max) {
@@ -171,8 +168,7 @@ for (i = min ; i <= max ; ++i)
  * keys handlers
  *********************************************************************************
  */
-void selectInterrupt (void)
-{
+void selectInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
@@ -183,8 +179,7 @@ if ((time_now - bounceCounter) >= BOUNCE_DELAY){
 bounceCounter = time_now;
 }
 
-void resetInterrupt (void)
-{
+void resetInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
@@ -195,8 +190,7 @@ if ((time_now - bounceCounter) >= BOUNCE_DELAY){
 bounceCounter = time_now;
 }
 
-void leftInterrupt (void)
-{
+void leftInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
@@ -207,8 +201,7 @@ if ((time_now - bounceCounter) >= BOUNCE_DELAY){
 bounceCounter = time_now;
 }
 
-void rightInterrupt (void)
-{
+void rightInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
@@ -219,8 +212,7 @@ if ((time_now - bounceCounter) >= BOUNCE_DELAY){
 bounceCounter = time_now;
 }
 
-void upInterrupt (void)
-{
+void upInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
@@ -231,8 +223,7 @@ if ((time_now - bounceCounter) >= BOUNCE_DELAY){
 bounceCounter = time_now;
 }
 
-void downInterrupt (void)
-{
+void downInterrupt (void) {
 int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){

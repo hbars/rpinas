@@ -15,11 +15,15 @@
 #include "poweroff.h"
 
 void rpi_shutdown (int fd) {
-    int ret1,ret2;
+
+int ret1,ret2;
 
 ret1 = pwch1 (fd);
 ret2 = pwch2 (fd);
-if (ret2 == LEFT) {lcdClear (fd); return;}
+if (ret2 == LEFT) {
+    lcdClear (fd);
+    return;
+}
 
 if (ret1 == UP)
     {
