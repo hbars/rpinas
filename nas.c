@@ -25,12 +25,19 @@ int flag = 0;
 int blink_flag = 1;
 IFINFO *ifinfo;
 float rx_speed = 0, tx_speed = 0;
-__u32 rx_old_eth = 0, tx_old_eth = 0, bin = 0;
-__u32 rx_old_wlan = 0, tx_old_wlan = 0, bout = 0;
-struct timeval t_now, t_last_eth, t_last_wlan;
-int tm_delay = 0;
+unsigned int rx_old_eth = 0;
+unsigned int tx_old_eth = 0;
+unsigned int bin = 0;
+unsigned int rx_old_wlan = 0;
+unsigned int tx_old_wlan = 0;
+unsigned int bout = 0;
 
-unsigned counter = 0 ;
+struct timeval t_now;
+struct timeval t_last_eth;
+struct timeval t_last_wlan;
+
+int tm_delay = 0;
+unsigned int counter = 0;
 int c = 0;
 int run = 1;
 double timedelta;
@@ -112,6 +119,8 @@ delay (1000) ;
 lcdClear (fd);
 lcdPosition (fd, 0, 0) ;
 
+gettimeofday(&t_last_eth, NULL);
+gettimeofday(&t_last_wlan, NULL);
 tim = time (NULL);
 ttim = tim + DISP_FLASH_TIME;
 counter = tim + DISP_BEFORE_NEXT_IN_SEC;
