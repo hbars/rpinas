@@ -29,28 +29,25 @@ void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int
 }
 /////////////////////////////////////////////////////////////
 time_t disp_time (int fd) {
-
-  char buf [30] ;
-  struct tm *t ;
-  time_t tim ;
-
-  tim = time (NULL) ;
-  t = localtime (&tim) ;
+char buf [30];
+time_t tim = time(NULL);
+struct tm *t = localtime (&tim);
+//  tim = time (NULL);
+//  t = localtime (&tim);
 
   lcdClear (fd);
-  sprintf (buf, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec) ;
-  lcdPosition (fd, 0, 0) ;
-  lcdPuts (fd, buf) ;
+  sprintf (buf, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
+  lcdPosition (fd, 0, 0);
+  lcdPuts (fd, buf);
 
-  sprintf (buf, "%02d/%02d/%02d", t->tm_mday, t->tm_mon + 1, t->tm_year+1900) ;
-  lcdPosition (fd, 0, 1) ;
-  lcdPuts (fd, buf) ;
+  sprintf (buf, "%02d/%02d/%02d", t->tm_mday, t->tm_mon + 1, t->tm_year+1900);
+  lcdPosition (fd, 0, 1);
+  lcdPuts (fd, buf);
 
 return (tim);
 }
 /////////////////////////////////////////////////////////////
-IFINFO *IfInfo (char *ifname)
-{
+IFINFO *IfInfo (char *ifname) {
 struct ifaddrs *ifaddr, *ifa;
 int family, s, n;
 char host[NI_MAXHOST];
@@ -89,25 +86,25 @@ return (ifinfo);
 
 // Yes or No LCD set 
 int YorN (int fd, int x, int y) {
-    int ret = LEFT;
+int ret = LEFT;
 
-    lcdPosition (fd, x+1, y) ;
-    lcdCursorBlink (fd, 1) ;
+    lcdPosition (fd, x+1, y);
+    lcdCursorBlink (fd, 1);
     for(;;) {
         if (buttonRes == LEFT) {
-	    lcdPosition (fd, x, y) ;
-	    lcdPrintf (fd, "N") ;
+	    lcdPosition (fd, x, y);
+	    lcdPrintf (fd, "N");
 	    buttonRes = -1;
 	    ret = LEFT;
         }
     else if (buttonRes == RIGHT) {
-	    lcdPosition (fd, x, y) ;
-	    lcdPrintf (fd, "Y") ;
+	    lcdPosition (fd, x, y);
+	    lcdPrintf (fd, "Y");
 	    buttonRes = -1;
 	    ret = RIGHT;
         }
     else if (buttonRes == SELECT) {
-	    lcdCursorBlink (fd, 0) ;
+	    lcdCursorBlink (fd, 0);
 	    buttonRes = -1;
             return ret;
 	}
@@ -117,23 +114,23 @@ int YorN (int fd, int x, int y) {
 
 // UP or DOWN LCD set 
 int UPorDOWN (int fd, int x) {
-    int ret = UP;
+int ret = UP;
 
-    lcdPosition (fd, x, 0) ;
-    lcdCursorBlink (fd, 1) ;
-    for(;;){
+    lcdPosition (fd, x, 0);
+    lcdCursorBlink (fd, 1);
+    for(;;) {
         if (buttonRes == UP) {
-        lcdPosition (fd, x, 0) ;
+        lcdPosition (fd, x, 0);
         buttonRes = -1;
         ret = UP;
 	}
     else if (buttonRes == DOWN) {
-        lcdPosition (fd, x, 1) ;
+        lcdPosition (fd, x, 1);
         buttonRes = -1;
         ret = DOWN;
 	}
     else if (buttonRes == SELECT) {
-        lcdCursorBlink (fd, 0) ;
+        lcdCursorBlink (fd, 0);
         buttonRes = -1;
         return ret;
 	}
@@ -142,24 +139,22 @@ delay(100);
 }
 
 void ledOff (int fd, int min, int max) {
-
 int i;
 
-for (i = max ; i >= min ; --i)
+for (i = max; i >= min; --i)
     {
-      softPwmWrite (DISP_LED, i) ;
-      delay (10) ;
+      softPwmWrite (DISP_LED, i);
+      delay (10);
     }
 }
 
 void ledOn (int fd, int min, int max) {
-
 int i;
 
-for (i = min ; i <= max ; ++i)
+for (i = min; i <= max; ++i)
     {
-      softPwmWrite (DISP_LED, i) ;
-      delay (10) ;
+      softPwmWrite (DISP_LED, i);
+      delay (10);
     }
 }
 

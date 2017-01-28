@@ -14,27 +14,26 @@
 #include "common.h"
 #include "nas.h"
 
-int main (void)
-{
-  int fd; 
-  int i = DISP_RANGE;
+int main (void) {
+int fd;
+int i = DISP_RANGE;
 
-  time_t tim;
-  time_t old_sec = 0;
-  time_t ttim = 0;
-  int flag = 0;
-  int blink_flag = 1;
-  IFINFO *ifinfo;
-  float rx_speed = 0, tx_speed = 0;
-  __u32 rx_old_eth = 0, tx_old_eth = 0, bin = 0;
-  __u32 rx_old_wlan = 0, tx_old_wlan = 0, bout = 0;
-  struct timeval t_now, t_last_eth, t_last_wlan;
-  int tm_delay = 0;
+time_t tim;
+time_t old_sec = 0;
+time_t ttim = 0;
+int flag = 0;
+int blink_flag = 1;
+IFINFO *ifinfo;
+float rx_speed = 0, tx_speed = 0;
+__u32 rx_old_eth = 0, tx_old_eth = 0, bin = 0;
+__u32 rx_old_wlan = 0, tx_old_wlan = 0, bout = 0;
+struct timeval t_now, t_last_eth, t_last_wlan;
+int tm_delay = 0;
 
-  unsigned counter = 0 ;
-  int c = 0;
-  int run = 1;
-  double timedelta;
+unsigned counter = 0 ;
+int c = 0;
+int run = 1;
+double timedelta;
 
 //printf ("RPi NAS v %s\n", VERSION) ;
 
@@ -156,6 +155,7 @@ else if (!blink_flag) {
     case UP:
         if (i < DISP_RANGE) {
             i += 5;
+	    i = i > DISP_RANGE ? DISP_RANGE : i;
 	    softPwmWrite (DISP_LED, i) ;
         }
         buttonRes = -1;
@@ -277,11 +277,11 @@ else if (!blink_flag) {
 		    c = 0;
 	    }
 	old_sec = time (NULL) ;
+      }
+      break;
     }
-    break;
-  }
-delay(30);
-}
+  delay(30);
+ }
 
 return (EXIT_SUCCESS) ;
 }

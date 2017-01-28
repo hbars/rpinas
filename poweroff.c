@@ -15,7 +15,6 @@
 #include "poweroff.h"
 
 void rpi_shutdown (int fd) {
-
 int ret1,ret2;
 
 ret1 = pwch1 (fd);
@@ -64,6 +63,7 @@ int pwch2 (int fd) {
 }
 
 void byebye (int fd) {
+
     lcdClear (fd);
     lcdPosition (fd, 1, 0) ;
     lcdPrintf (fd, " BYE, BYE...") ;
