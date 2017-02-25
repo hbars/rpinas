@@ -1,2 +1,2 @@
-WiFi router and NAS interface for Raspberry pi.
-LCD WH1602 and 6 buttons.
+Control interface for Raspberry pi based wifi router.
+LCD WH1602 display and 6 buttons.
