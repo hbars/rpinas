@@ -31,7 +31,7 @@
 #define DOWN 17  // GPIO 28 [51]
 
 // blink
-#define BLINK_LED 0 // GPIO 17
+#define BLINK_LED 0 // GPIO 17 [11]
 #define BLINK_DELAY 30
 
 // LCD led configuration

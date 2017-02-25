@@ -14,10 +14,9 @@
 #include "common.h"
 #include "nas.h"
 
-int main (void) {
+int main (int argc, char *argv[]) {
 int fd;
 int i = DISP_RANGE;
-
 time_t tim;
 time_t old_sec = 0;
 time_t ttim = 0;
@@ -32,9 +31,9 @@ unsigned int rx_old_wlan = 0;
 unsigned int tx_old_wlan = 0;
 unsigned int bout = 0;
 
-struct timeval t_now;
-struct timeval t_last_eth;
-struct timeval t_last_wlan;
+struct timeval t_now = {0, 0};
+struct timeval t_last_eth = {0, 0};
+struct timeval t_last_wlan = {0, 0};
 
 int tm_delay = 0;
 unsigned int counter = 0;
@@ -120,7 +119,9 @@ lcdClear (fd);
 lcdPosition (fd, 0, 0) ;
 
 gettimeofday(&t_last_eth, NULL);
-gettimeofday(&t_last_wlan, NULL);
+//gettimeofday(&t_last_wlan, NULL);
+t_last_wlan=t_last_eth;
+
 tim = time (NULL);
 ttim = tim + DISP_FLASH_TIME;
 counter = tim + DISP_BEFORE_NEXT_IN_SEC;

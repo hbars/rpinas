@@ -14,6 +14,6 @@
 #ifndef POWEROFF_H
 #define POWEROFF_H
 
-extern volatile int buttonRes;
+// extern volatile int buttonRes;
 
 #endif /* POWEROFF_H */
