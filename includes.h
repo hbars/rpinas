@@ -30,8 +30,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <locale.h>
 //#include <sys/types.h>
-//#include <math.h>
+//#include <ctype.h>
+#include <fcntl.h>
+
 #include <time.h>
 #include <sys/time.h>
 /*
@@ -39,7 +42,6 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 
-#include <ctype.h>
 #include <signal.h>
 */
 // getifaddrs

@@ -16,12 +16,7 @@
 
 #include "includes.h"
 
-#define VERSION "1.0"
-
-#ifndef TRUE
-#  define	TRUE	(1==1)
-#  define	FALSE	(1==2)
-#endif
+#define VERSION "1.1"
 
 void ledOff (int fd, int min, int max);
 void ledOn (int fd, int min, int max);
@@ -44,6 +39,8 @@ int UPorDOWN (int fd, int x);
 
 volatile int buttonRes;
 volatile int bounceCounter;
+int fd;
+int run;
 
 struct ifinfo {
     char *ip;
@@ -54,5 +51,13 @@ typedef struct ifinfo IFINFO;
 
 IFINFO *IfInfo (char *ifname);
 void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd);
+
+void blink (int gdelay);
+int selfunc (int fd);
+
+char *sprint_uptime(void);
+void disp_uptime(void);
+char *getiwinfo(char *iwname, const char *req);
+void disp_iwinfo(void);
 
 #endif /* COMMON_H */

@@ -15,13 +15,11 @@
 #include "nas.h"
 
 int main (int argc, char *argv[]) {
-int fd;
-int i = DISP_RANGE;
+int disp_r = DISP_RANGE;
 time_t tim;
 time_t old_sec = 0;
 time_t ttim = 0;
-int flag = 0;
-int blink_flag = 1;
+int disp_flag = 0;
 IFINFO *ifinfo;
 float rx_speed = 0, tx_speed = 0;
 unsigned int rx_old_eth = 0;
@@ -35,11 +33,11 @@ struct timeval t_now = {0, 0};
 struct timeval t_last_eth = {0, 0};
 struct timeval t_last_wlan = {0, 0};
 
-int tm_delay = 0;
 unsigned int counter = 0;
 int c = 0;
-int run = 1;
 double timedelta;
+
+int f;
 
 //printf ("RPi NAS v %s\n", VERSION) ;
 
@@ -49,26 +47,26 @@ if (wiringPiSetup () == -1) {
   }
 
 // configure buttons pins
+pinMode (ENTER, INPUT) ;
 pinMode (SELECT, INPUT) ;
-pinMode (RESET, INPUT) ;
 pinMode (LEFT, INPUT) ;
 pinMode (RIGHT, INPUT) ;
 pinMode (UP, INPUT) ;
 pinMode (DOWN, INPUT) ;
 pinMode(BLINK_LED, OUTPUT); // set mode to output
+pullUpDnControl (ENTER, PUD_UP) ;
 pullUpDnControl (SELECT, PUD_UP) ;
-pullUpDnControl (RESET, PUD_UP) ;
 pullUpDnControl (LEFT, PUD_UP) ;
 pullUpDnControl (RIGHT, PUD_UP) ;
 pullUpDnControl (UP, PUD_UP) ;
 pullUpDnControl (DOWN, PUD_UP) ;
 
-if (wiringPiISR (SELECT, INT_EDGE_FALLING, &selectInterrupt) < 0)
+if (wiringPiISR (ENTER, INT_EDGE_FALLING, &selectInterrupt) < 0)
   {
     fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
-if (wiringPiISR (RESET, INT_EDGE_FALLING, &resetInterrupt) < 0)
+if (wiringPiISR (SELECT, INT_EDGE_FALLING, &resetInterrupt) < 0)
   {
     fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
@@ -118,8 +116,9 @@ delay (1000) ;
 lcdClear (fd);
 lcdPosition (fd, 0, 0) ;
 
+run = 1;
+disp_r = DISP_RANGE;
 gettimeofday(&t_last_eth, NULL);
-//gettimeofday(&t_last_wlan, NULL);
 t_last_wlan=t_last_eth;
 
 tim = time (NULL);
@@ -130,51 +129,38 @@ for (;;)
 {
     gettimeofday(&t_now, NULL);
     tim = time (NULL) ;
-    if (buttonRes != -1 && flag)
+    if (buttonRes != -1 && disp_flag)
 	{
 	ttim = tim + DISP_FLASH_TIME;
-	ledOn(fd, 0, i);
-	flag = 0;
+	ledOn(fd, 0, disp_r);
+	disp_flag = 0;
 	}
-    if ((tim > ttim) && !flag)
+    if ((tim > ttim) && !disp_flag && run)
 	{
-	ledOff(fd, 0, i);
-	flag = 1;
+	ledOff(fd, 0, disp_r);
+	disp_flag = 1;
 	}
-// blink
-//printf("bf %i\n",blink_flag);
-if (tm_delay <= BLINK_DELAY && blink_flag) {
-    digitalWrite(BLINK_LED, 1);
-    tm_delay++;
-//printf("on %u\n",tm_delay);
-    if(tm_delay == BLINK_DELAY) blink_flag = 0;
-}
-else if (!blink_flag) {
-    digitalWrite(BLINK_LED, 0);
-    tm_delay--;
-//printf("off %u\n",tm_delay);
-    if(tm_delay == 0) blink_flag = 1;
-}
 
 // buttons
     switch (buttonRes) {
-    case SELECT:
+    case ENTER:
+	run = run ? 0:1;
         buttonRes = -1;
 //puts("s\n");
     break;
     case UP:
-        if (i < DISP_RANGE) {
-            i += 5;
-	    i = i > DISP_RANGE ? DISP_RANGE : i;
-	    softPwmWrite (DISP_LED, i) ;
+        if (disp_r < DISP_RANGE) {
+            disp_r += 5;
+	    disp_r = disp_r > DISP_RANGE ? DISP_RANGE : disp_r;
+	    softPwmWrite (DISP_LED, disp_r) ;
         }
         buttonRes = -1;
     break;
     case DOWN:
-        if (i > 0) {
-            i -= 5;
-	    i = i < 0 ? 0 : i;
-	    softPwmWrite (DISP_LED, i) ;
+        if (disp_r > 0) {
+            disp_r -= 5;
+	    disp_r = disp_r < 0 ? 0 : disp_r;
+	    softPwmWrite (DISP_LED, disp_r) ;
         }
         buttonRes = -1;
     break;
@@ -186,15 +172,30 @@ else if (!blink_flag) {
         buttonRes = -1;
         c++;
     break;
-    case RESET:
-        rpi_shutdown (fd);
-        buttonRes = -1;
+    case SELECT:
+	f=selfunc(fd);
+	ledOn(fd, disp_r, disp_r);
+	switch (f) {
+	    case 0: // SYSTEM
+		rpi_shutdown (fd);
+	    break;
+	    case 1: // WLAN INFO
+		disp_iwinfo();
+	    break;
+	    case 2: // UPTIME
+		disp_uptime();
+	    break;
+	    case 3: // MENU EXIT
+	    default:
+	    break;
+	}
+	buttonRes = -1;
     break;
     default:
 #define MAX_INST 30 // with default
 
-	if (tim > old_sec && run) {
-	    if (tim > counter) {
+	if (tim > old_sec) {
+	    if (tim > counter && run) {
 		counter = tim + DISP_BEFORE_NEXT_IN_SEC;
 		c++;
 		c = c < MAX_INST ? c : 0;
@@ -290,9 +291,7 @@ else if (!blink_flag) {
       }
       break;
     }
-  delay(30);
+    blink(G_DELAY);
  }
-
 return (EXIT_SUCCESS) ;
 }
-

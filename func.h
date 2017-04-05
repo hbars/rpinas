@@ -13,8 +13,18 @@
 
 #ifndef FUNC_H
 #define FUNC_H
+static const char *func[] = {"SYSTEM", "WLAN INFO", "UPTIME", "MENU EXIT"};
 
-extern volatile int buttonRes;
+static const char *quality = "iwconfig %s|grep -i 'quality'|\
+    sed 's/.*=\\([0-9]*\\/[0-9]*\\).*/\\1/'";
+
+static const char *essid = "iwconfig %s|grep -i 'essid'|\
+    sed 's/.*\\\"\\(.*\\)\\\"/\\1/'";
+
+static const char *rate = "iwconfig %s|grep -i 'rate'|\
+    sed 's/.*=\\(.*\\/s\\)\\ .*/\\1/'";
+
+static const char *level = "iwconfig %s|grep -i 'level'|\
+    sed 's/.*=\\([\\-]*.*\\)/\\1/'";
 
 #endif /* FUNC_H */
-

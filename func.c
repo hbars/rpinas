@@ -12,12 +12,7 @@
  */
 #include "common.h"
 #include "func.h"
-/*
-unsigned long ROL (unsigned long a, int offset)
-{
-       return a << offset | a >> (32 - offset);
-}
-*/
+
 void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd) {
 
     lcdClear (fd);
@@ -25,15 +20,12 @@ void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int
     lcdPrintf (fd, "%s%s", ifname, ip) ;
     lcdPosition (fd, 0, 1) ;
     lcdPrintf (fd, "%.1f<>%.1f", (float)rx_speed, (float)tx_speed) ;
-//printf("%s%s - %.1f<>%.1f\n", ifname, ip,(float)rx_speed, (float)tx_speed);
 }
 /////////////////////////////////////////////////////////////
 time_t disp_time (int fd) {
 char buf [30];
 time_t tim = time(NULL);
 struct tm *t = localtime (&tim);
-//  tim = time (NULL);
-//  t = localtime (&tim);
 
   lcdClear (fd);
   sprintf (buf, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
@@ -52,13 +44,17 @@ struct ifaddrs *ifaddr, *ifa;
 int family, s, n;
 char host[NI_MAXHOST];
 IFINFO *ifinfo = (IFINFO*)malloc(sizeof(IFINFO));
+if (!ifinfo) {
+    fprintf(stderr, "Out of memory.\n");
+    exit(EXIT_FAILURE);
+}
 ifinfo->ip = NULL;
 
-    if (getifaddrs(&ifaddr) == -1) {
-           perror("getifaddrs");
-           exit(EXIT_FAILURE);
-	}
-  /* Walk through linked list, maintaining head pointer so we
+if (getifaddrs(&ifaddr) == -1) {
+    perror("getifaddrs");
+    exit(EXIT_FAILURE);
+    }
+/* Walk through linked list, maintaining head pointer so we
   can free list later */
            for (ifa = ifaddr, n = 0; ifa != NULL; ifa = ifa->ifa_next, n++) {
                if (ifa->ifa_addr == NULL || strcmp(ifa->ifa_name, ifname))
@@ -84,31 +80,113 @@ ifinfo->ip = NULL;
 return (ifinfo);
 }
 
+int selfunc (int fd) {
+int lfunc = sizeof(func)/sizeof(*func)-1;
+int s = lfunc;
+
+lcdClear (fd);
+lcdPrintf (fd, func[s]);
+for(;;) {
+    if (buttonRes == LEFT) {
+	    s--;
+	    s = s < 0 ? lfunc : s;
+	    lcdClear (fd);
+	    lcdPrintf (fd, func[s]);
+	    buttonRes = -1;
+        }
+    else if (buttonRes == RIGHT) {
+	    s++;
+	    s = s > lfunc ? 0 : s;
+	    lcdClear (fd);
+	    lcdPrintf (fd, func[s]);
+	    buttonRes = -1;
+        }
+    else if (buttonRes == ENTER) {
+	    lcdClear (fd);
+	    buttonRes = -1;
+            return s;
+	}
+    blink(G_DELAY);
+    }
+}
+
 // Yes or No LCD set 
 int YorN (int fd, int x, int y) {
 int ret = LEFT;
 
-    lcdPosition (fd, x+1, y);
-    lcdCursorBlink (fd, 1);
-    for(;;) {
-        if (buttonRes == LEFT) {
-	    lcdPosition (fd, x, y);
-	    lcdPrintf (fd, "N");
-	    buttonRes = -1;
-	    ret = LEFT;
-        }
-    else if (buttonRes == RIGHT) {
-	    lcdPosition (fd, x, y);
-	    lcdPrintf (fd, "Y");
-	    buttonRes = -1;
-	    ret = RIGHT;
-        }
-    else if (buttonRes == SELECT) {
-	    lcdCursorBlink (fd, 0);
-	    buttonRes = -1;
-            return ret;
+lcdPosition (fd, x+1, y);
+lcdCursorBlink (fd, 1);
+
+for(;;) {
+    if (buttonRes == LEFT) {
+        lcdPosition (fd, x, y);
+        lcdPrintf (fd, "N");
+        buttonRes = -1;
+        ret = LEFT;
 	}
-    delay(100);
+    else if (buttonRes == RIGHT) {
+        lcdPosition (fd, x, y);
+        lcdPrintf (fd, "Y");
+        buttonRes = -1;
+        ret = RIGHT;
+	}
+    else if (buttonRes == ENTER) {
+        lcdCursorBlink (fd, 0);
+        buttonRes = -1;
+	return ret;
+	}
+    blink(G_DELAY);
+    }
+}
+
+void disp_uptime(){
+struct tm *realtime;
+time_t realseconds;
+
+while (buttonRes == -1) {
+/* first get the current time */
+    time(&realseconds);
+    realtime = localtime(&realseconds);
+    lcdClear(fd);
+    lcdPrintf(fd, "%02d:%02d:%02d",
+	realtime->tm_hour, realtime->tm_min, realtime->tm_sec);
+    lcdPosition(fd, 0, 1);
+    lcdPrintf(fd, "%s", sprint_uptime());
+    blink(G_DELAY);
+    }
+}
+
+void disp_iwinfo(){
+int delay = 0;
+int disp_flag = 1;
+
+lcdClear(fd);
+lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, essid));
+lcdPosition(fd, 0, 1);
+lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
+
+while (buttonRes == -1) {
+    if (delay <= DISP_NEXT_INFO_DELAY && disp_flag) {
+	delay++;
+	if(delay == DISP_NEXT_INFO_DELAY) {
+	    disp_flag = 0;
+	    lcdClear(fd);
+	    lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, essid));
+	    lcdPosition(fd, 0, 1);
+	    lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
+	    }
+	}
+    else if (!disp_flag) {
+        delay--;
+        if(delay == 0) {
+	    lcdClear(fd);
+	    lcdPrintf(fd, "RATE :%s", getiwinfo(WLANx, rate));
+	    lcdPosition(fd, 0, 1);
+	    lcdPrintf(fd, "LEVEL:%s", getiwinfo(WLANx, level));
+	    disp_flag = 1;
+	    }
+    }
+    blink(G_DELAY);
     }
 }
 
@@ -116,10 +194,11 @@ int ret = LEFT;
 int UPorDOWN (int fd, int x) {
 int ret = UP;
 
-    lcdPosition (fd, x, 0);
-    lcdCursorBlink (fd, 1);
-    for(;;) {
-        if (buttonRes == UP) {
+lcdPosition (fd, x, 0);
+lcdCursorBlink (fd, 1);
+
+for(;;) {
+    if (buttonRes == UP) {
         lcdPosition (fd, x, 0);
         buttonRes = -1;
         ret = UP;
@@ -129,12 +208,13 @@ int ret = UP;
         buttonRes = -1;
         ret = DOWN;
 	}
-    else if (buttonRes == SELECT) {
+    else if (buttonRes == ENTER) {
         lcdCursorBlink (fd, 0);
         buttonRes = -1;
         return ret;
 	}
-delay(100);
+    blink(G_DELAY);
+//    delay(30);
     }
 }
 
@@ -168,8 +248,8 @@ int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
   delay (BOUNCE_RELEASE);
-  if (!digitalRead (SELECT))
-    buttonRes = SELECT;
+  if (!digitalRead (ENTER))
+    buttonRes = ENTER;
  }
 bounceCounter = time_now;
 }
@@ -179,8 +259,8 @@ int time_now=millis();
 
 if ((time_now - bounceCounter) >= BOUNCE_DELAY){
   delay (BOUNCE_RELEASE);
-  if (!digitalRead (RESET))
-    buttonRes = RESET;
+  if (!digitalRead (SELECT))
+    buttonRes = SELECT;
  }
 bounceCounter = time_now;
 }

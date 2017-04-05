@@ -7,28 +7,25 @@
 ################################################################################
 
 
-#DEBUG	= -g -O0
 DEBUG	= -O2
 CC	= gcc
 INCLUDE	+= -I/usr/include
 CFLAGS	+= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
 
 LDFLAGS	= -L/usr/lib
-#LDLIBS	= -lwiringPi -lwiringPiDev -lm
 LDLIBS	= -lwiringPi -lwiringPiDev
 
 # Should not alter anything below this line
 ###############################################################################
 
-SRC	=	nas.c poweroff.c func.c
+SRC	=	nas.c poweroff.c func.c blink.c sysinfo.c iwinfo.c
 
 OBJ	=	$(SRC:.c=.o)
 
-#BINS	=	$(SRC:.c=)
 BINS	=	nas
 
 nas:	$(OBJ)
-	@echo [link]
+	@echo [link] $@
 	@$(CC) -o $@ $(OBJ) $(LDFLAGS) $(LDLIBS)
 
 .c.o:
@@ -36,7 +33,8 @@ nas:	$(OBJ)
 	@$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(OBJ) *~ core tags $(BINS)
+	rm -rf *.o *~ core tags $(BINS)
+#	rm -f $(OBJ) *~ core tags $(BINS)
 
 tags:	$(SRC)
 	@echo [ctags]

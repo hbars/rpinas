@@ -14,6 +14,6 @@
 #ifndef NAS_H
 #define NAS_H
 
-extern volatile int buttonRes;
+//extern volatile int buttonRes;
 
 #endif /* NAS_H */

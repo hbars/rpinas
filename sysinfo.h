@@ -11,8 +11,8 @@
  * See README and COPYING for more details.
  */
 
-#ifndef POWEROFF_H
-#define POWEROFF_H
+#ifndef SYSINFO_H
+#define SYSINFO_H
 
 
-#endif /* POWEROFF_H */
+#endif /* SYSINFO_H */

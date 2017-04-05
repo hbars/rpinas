@@ -11,8 +11,8 @@
  * See README and COPYING for more details.
  */
 
-#ifndef POWEROFF_H
-#define POWEROFF_H
+#ifndef BLINK_H
+#define BLINK_H
 
 
-#endif /* POWEROFF_H */
+#endif /* BLINK_H */
