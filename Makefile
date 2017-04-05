@@ -6,12 +6,12 @@
 # This file is part of RPi NAS
 ################################################################################
 
+BINDIR	=	/usr/local/bin
 
 DEBUG	= -O2
 CC	= gcc
 INCLUDE	+= -I/usr/include
 CFLAGS	+= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
-
 LDFLAGS	= -L/usr/lib
 LDLIBS	= -lwiringPi -lwiringPiDev
 
@@ -44,7 +44,8 @@ depend:
 	makedepend -Y $(SRC)
 
 install:
-	@echo Nothing to be made.
+	@echo [install] $(BINDIR)/$(BINS)
+	sudo install -s $(BINS) $(BINDIR)
 
 # DO NOT DELETE
 
