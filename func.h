@@ -16,15 +16,16 @@
 static const char *func[] = {"SYSTEM", "WLAN INFO", "UPTIME", "MENU EXIT"};
 
 static const char *quality = "iwconfig %s|grep -i 'quality'|\
-    sed 's/.*=\\([0-9]*\\/[0-9]*\\).*/\\1/'";
+    sed 's/.*lity=\\([0-9]*\\/[0-9]*\\).*/\\1/'";
 
 static const char *essid = "iwconfig %s|grep -i 'essid'|\
-    sed 's/.*\\\"\\(.*\\)\\\"/\\1/'";
+    sed 's/.*\\\"\\(.*\\)\\\"\\ .*/\\1/'";
 
 static const char *rate = "iwconfig %s|grep -i 'rate'|\
-    sed 's/.*=\\(.*\\/s\\)\\ .*/\\1/'";
+    sed 's/.*ate\\:\\(.*\\/s\\)\\ .*/\\1/'";
 
 static const char *level = "iwconfig %s|grep -i 'level'|\
-    sed 's/.*=\\([\\-]*.*\\)/\\1/'";
+    sed 's/.*evel=\\([0-9]*\\/[0-9]*\\)\\ .*/\\1/'";
+
 
 #endif /* FUNC_H */

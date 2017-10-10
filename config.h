@@ -57,4 +57,8 @@ see "gpio readall"
 #define ETHx	"eth0"
 #define WLANx	"wlan0"
 
+#define	DTIME 2 // disp date sec
+#define ETHTIME 5 // ethernet in sec
+#define WLANTIME 5 // wlan in sec
+
 #endif /* CONFIG_H */

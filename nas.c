@@ -33,11 +33,12 @@ struct timeval t_now = {0, 0};
 struct timeval t_last_eth = {0, 0};
 struct timeval t_last_wlan = {0, 0};
 
-unsigned int counter = 0;
-int c = 0;
 double timedelta;
 
-int f;
+int f; //select swith
+
+unsigned int i = 0; // swich block
+unsigned int c = 0; // distlay time counter
 
 //printf ("RPi NAS v %s\n", VERSION) ;
 
@@ -123,7 +124,6 @@ t_last_wlan=t_last_eth;
 
 tim = time (NULL);
 ttim = tim + DISP_FLASH_TIME;
-counter = tim + DISP_BEFORE_NEXT_IN_SEC;
 buttonRes = -1;
 for (;;)
 {
@@ -166,11 +166,13 @@ for (;;)
     break;
     case LEFT:
         buttonRes = -1;
-        c--;
+        i--;
+	c = 0;
     break;
     case RIGHT:
         buttonRes = -1;
-        c++;
+        i++;
+	c = 0;
     break;
     case SELECT:
 	f=selfunc(fd);
@@ -192,102 +194,88 @@ for (;;)
 	buttonRes = -1;
     break;
     default:
-#define MAX_INST 30 // with default
-
 	if (tim > old_sec) {
-	    if (tim > counter && run) {
-		counter = tim + DISP_BEFORE_NEXT_IN_SEC;
-		c++;
-		c = c < MAX_INST ? c : 0;
-	    }
-	    switch (c) {
+	    old_sec = tim;
+//	    case block
+	    switch (i) {
 	        case 0:
+		    if (c <= DTIME) {
+			disp_time(fd) ;
+		    } else {
+			i++;
+			c=0;
+		    }
+	        break;
 	        case 1:
-		    disp_time(fd) ;
+		    if (c <= ETHTIME) {
+			ifinfo = IfInfo(ETHx);
+			if(ifinfo->ip == NULL){
+			    i++;
+			    c=0;
+			    free (ifinfo);
+			break;
+			}
+			bin  = ifinfo->stats->rx_bytes + (rx_old_eth & ~0xffffffffULL);
+			bout = ifinfo->stats->tx_bytes + (tx_old_eth & ~0xffffffffULL);
+			if ( bin < rx_old_eth )
+				bin += (1ULL << 32);
+			if ( bout < tx_old_eth )
+		    		bout += (1ULL << 32);
+
+			timedelta = (double)(t_now.tv_sec - t_last_eth.tv_sec) +
+			(t_now.tv_usec - t_last_eth.tv_usec)/1.0e+6;
+
+			rx_speed = (float)((bin - rx_old_eth)*8/timedelta)/1000;
+			tx_speed = (float)((bout - tx_old_eth)*8/timedelta)/1000;
+			LCDprintIfInfo ("E", ifinfo->ip, rx_speed, tx_speed, fd);
+			rx_old_eth = bin;
+			tx_old_eth = bout;
+			t_last_eth = t_now;
+			free (ifinfo->ip);
+			free (ifinfo);
+			} else {
+			    i++;
+			    c = 0;
+			}
 	        break;
 	        case 2:
-	        case 3:
-	        case 4:
-	        case 5:
-	        case 6:
-	        case 7:
-	        case 8:
-	        case 9:
-	        case 10:
-	        case 11:
-	        case 12: //11
-		    ifinfo = IfInfo(ETHx);
-		    if(ifinfo->ip == NULL){
-			c += 11;
-			free (ifinfo);
+		    if (c <= WLANTIME) {
+			ifinfo = IfInfo(WLANx);
+			if(ifinfo->ip == NULL){
+			    i = 0;
+			    c = 0;
+			    free (ifinfo);
 			break;
-		    }
-		    bin  = ifinfo->stats->rx_bytes + (rx_old_eth & ~0xffffffffULL);
-		    bout = ifinfo->stats->tx_bytes + (tx_old_eth & ~0xffffffffULL);
-		    if ( bin < rx_old_eth )
-		      bin += (1ULL << 32);
-		    if ( bout < tx_old_eth )
-		      bout += (1ULL << 32);
+			}
+			bin  = ifinfo->stats->rx_bytes + (rx_old_wlan & ~0xffffffffULL);
+			bout = ifinfo->stats->tx_bytes + (tx_old_wlan & ~0xffffffffULL);
+			if ( bin < rx_old_wlan )
+		    	    bin += (1ULL << 32);
+			if ( bout < tx_old_wlan )
+		    	    bout += (1ULL << 32);
 
-		    timedelta = (double)(t_now.tv_sec - t_last_eth.tv_sec) +
-		    (t_now.tv_usec - t_last_eth.tv_usec)/1.0e+6;
+			timedelta = (double)(t_now.tv_sec - t_last_wlan.tv_sec) +
+			(t_now.tv_usec - t_last_wlan.tv_usec)/1.0e+6;
 
-		    rx_speed = (float)((bin - rx_old_eth)*8/timedelta)/1000;
-		    tx_speed = (float)((bout - tx_old_eth)*8/timedelta)/1000;
-		    LCDprintIfInfo ("E", ifinfo->ip, rx_speed, tx_speed, fd);
-		    rx_old_eth = bin;
-		    tx_old_eth = bout;
-		    t_last_eth = t_now;
-		    free (ifinfo->ip);
-		    free (ifinfo);
-
-	        break;
-	        case 13:
-	        case 14:
-	        case 15:
-	        case 16:
-	        case 17:
-	        case 18:
-	        case 19:
-	        case 20:
-	        case 21:
-	        case 22:
-	        case 23:
-	        case 24:
-	        case 25:
-	        case 26:
-	        case 27:
-	        case 28:
-	        case 29: //17
-		    ifinfo = IfInfo(WLANx);
-		    if(ifinfo->ip == NULL){
-			c += 17;
+			rx_speed = (float)((bin - rx_old_wlan)*8/timedelta)/1000;
+			tx_speed = (float)((bout - tx_old_wlan)*8/timedelta)/1000;
+			LCDprintIfInfo ("W", ifinfo->ip, rx_speed, tx_speed, fd);
+			rx_old_wlan = bin;
+			tx_old_wlan = bout;
+			t_last_wlan = t_now;
+			free (ifinfo->ip);
 			free (ifinfo);
-			break;
-		    }
-		    bin  = ifinfo->stats->rx_bytes + (rx_old_wlan & ~0xffffffffULL);
-		    bout = ifinfo->stats->tx_bytes + (tx_old_wlan & ~0xffffffffULL);
-		    if ( bin < rx_old_wlan )
-		      bin += (1ULL << 32);
-		    if ( bout < tx_old_wlan )
-		      bout += (1ULL << 32);
-
-		    timedelta = (double)(t_now.tv_sec - t_last_wlan.tv_sec) +
-		    (t_now.tv_usec - t_last_wlan.tv_usec)/1.0e+6;
-
-		    rx_speed = (float)((bin - rx_old_wlan)*8/timedelta)/1000;
-		    tx_speed = (float)((bout - tx_old_wlan)*8/timedelta)/1000;
-		    LCDprintIfInfo ("W", ifinfo->ip, rx_speed, tx_speed, fd);
-		    rx_old_wlan = bin;
-		    tx_old_wlan = bout;
-		    t_last_wlan = t_now;
-		    free (ifinfo->ip);
-		    free (ifinfo);
+			} else {
+			    i = 0;
+			    c = 0;
+			}
 	        break;
 	        default:   // MAX_INST
+		    disp_time(fd);
+		    i = 0;
 		    c = 0;
 	    }
-	old_sec = time (NULL) ;
+	    if (run) c++;
       }
       break;
     }
