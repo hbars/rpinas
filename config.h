@@ -47,8 +47,7 @@ see "gpio readall"
 // LCD led configuration
 #define DISP_LED 1 // GPIO 18 [12]
 #define DISP_RANGE 70 // max bright
-#define DISP_FLASH_TIME 15 // display flash time
-#define DISP_BEFORE_NEXT_IN_SEC 2 // display time before next instance
+#define DISP_FLASH_TIME 25 // display flash time
 
 #define BOUNCE_DELAY 150 // buttons bounce delay
 #define BOUNCE_RELEASE 40 // buttons release delay
