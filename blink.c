@@ -15,14 +15,14 @@
 
 // blink
 void blink(gdelay) {
-
 static int tm_delay = 0;
 static int blink_flag = 1;
 
 if (!run) {
     // led on
     digitalWrite(BLINK_LED, 0);
-    goto frun;
+    delay(gdelay);
+    return;
     }
 
 if (tm_delay <= BLINK_DELAY && blink_flag) {
@@ -41,6 +41,6 @@ else if (!blink_flag) {
 	blink_flag = 1;
 	}
     }
-frun:
-delay(gdelay);
+    delay(gdelay);
+    return;
 }

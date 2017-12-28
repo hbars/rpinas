@@ -20,7 +20,7 @@
 
 void ledOff (int fd, int min, int max);
 void ledOn (int fd, int min, int max);
-time_t disp_time (int fd);
+void disp_time (int fd);
 void rpi_shutdown (int fd);
 
 void selectInterrupt (void);

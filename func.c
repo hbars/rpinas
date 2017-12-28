@@ -22,7 +22,7 @@ void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int
     lcdPrintf (fd, "%.1f<>%.1f", (float)rx_speed, (float)tx_speed) ;
 }
 /////////////////////////////////////////////////////////////
-time_t disp_time (int fd) {
+void disp_time (int fd) {
 char buf [30];
 time_t tim = time(NULL);
 struct tm *t = localtime (&tim);
@@ -35,8 +35,6 @@ struct tm *t = localtime (&tim);
   sprintf (buf, "%02d/%02d/%02d", t->tm_mday, t->tm_mon + 1, t->tm_year+1900);
   lcdPosition (fd, 0, 1);
   lcdPuts (fd, buf);
-
-return (tim);
 }
 /////////////////////////////////////////////////////////////
 IFINFO *IfInfo (char *ifname) {
