@@ -35,14 +35,8 @@ see "gpio readall"
 #define UP 18    // GPIO 29 [52]
 #define DOWN 17  // GPIO 28 [51]
 
-// global circle delay
-#define G_DELAY 10
-// display next info
-#define DISP_NEXT_INFO_DELAY G_DELAY*5.5
-
 // blink
 #define BLINK_LED 0 // GPIO 17 [11]
-#define BLINK_DELAY G_DELAY*5
 
 // LCD led configuration
 #define DISP_LED 1 // GPIO 18 [12]
@@ -56,8 +50,8 @@ see "gpio readall"
 #define ETHx	"eth0"
 #define WLANx	"wlan0"
 
-#define	DTIME 2 // disp date sec
+#define	DTIME 3 // disp date sec
 #define ETHTIME 5 // ethernet in sec
-#define WLANTIME 5 // wlan in sec
+#define WLANTIME 7 // wlan in sec
 
 #endif /* CONFIG_H */

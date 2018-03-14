@@ -17,7 +17,6 @@
 int main (int argc, char *argv[]) {
 int disp_r = DISP_RANGE;
 time_t tim;
-time_t old_sec = 0;
 time_t ttim = 0;
 int disp_flag = 0;
 IFINFO *ifinfo;
@@ -33,6 +32,7 @@ struct timeval t_now = {0, 0};
 struct timeval t_last_eth = {0, 0};
 struct timeval t_last_wlan = {0, 0};
 
+int retval = 0;
 double timedelta;
 
 int f; //select swith
@@ -194,8 +194,7 @@ for (;;)
 	buttonRes = -1;
     break;
     default:
-	if (tim > old_sec) {
-	    old_sec = tim;
+	if (retval == EINVAL||EINTR) {
 //	    case block
 	    switch (i) {
 	        case 0:
@@ -275,11 +274,11 @@ for (;;)
 		    i = 0;
 		    c = 0;
 	    }
+	    retval = blink();
 	    if (run) c++;
       }
       break;
     }
-    blink(G_DELAY);
  }
 return (EXIT_SUCCESS) ;
 }

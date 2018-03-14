@@ -13,8 +13,14 @@
 #include "common.h"
 #include "func.h"
 
-void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd) {
+int onesec(void) {
+int retval;
+struct timeval timeout = {1, 0};
+    retval = select(1, NULL, NULL, NULL, &timeout);
+    return (retval);
+}
 
+void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd) {
     lcdClear (fd);
     lcdPosition (fd, 0, 0) ;
     lcdPrintf (fd, "%s%s", ifname, ip) ;
@@ -104,7 +110,7 @@ for(;;) {
 	    buttonRes = -1;
             return s;
 	}
-    blink(G_DELAY);
+    (void)blink();
     }
 }
 
@@ -133,7 +139,7 @@ for(;;) {
         buttonRes = -1;
 	return ret;
 	}
-    blink(G_DELAY);
+    (void)blink();
     }
 }
 
@@ -150,12 +156,11 @@ while (buttonRes == -1) {
 	realtime->tm_hour, realtime->tm_min, realtime->tm_sec);
     lcdPosition(fd, 0, 1);
     lcdPrintf(fd, "%s", sprint_uptime());
-    blink(G_DELAY);
+    (void)blink();
     }
 }
 
 void disp_iwinfo(){
-int delay = 0;
 int disp_flag = 1;
 
 lcdClear(fd);
@@ -164,27 +169,21 @@ lcdPosition(fd, 0, 1);
 lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
 
 while (buttonRes == -1) {
-    if (delay <= DISP_NEXT_INFO_DELAY && disp_flag) {
-	delay++;
-	if(delay == DISP_NEXT_INFO_DELAY) {
+    if (disp_flag) {
 	    disp_flag = 0;
 	    lcdClear(fd);
 	    lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, essid));
 	    lcdPosition(fd, 0, 1);
 	    lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
-	    }
 	}
     else if (!disp_flag) {
-        delay--;
-        if(delay == 0) {
 	    lcdClear(fd);
 	    lcdPrintf(fd, "RATE :%s", getiwinfo(WLANx, rate));
 	    lcdPosition(fd, 0, 1);
 	    lcdPrintf(fd, "LEVEL:%s", getiwinfo(WLANx, level));
 	    disp_flag = 1;
-	    }
     }
-    blink(G_DELAY);
+    (void)blink();
     }
 }
 
@@ -211,8 +210,7 @@ for(;;) {
         buttonRes = -1;
         return ret;
 	}
-    blink(G_DELAY);
-//    delay(30);
+    (void)blink();
     }
 }
 

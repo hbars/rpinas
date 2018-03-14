@@ -31,6 +31,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <locale.h>
+
+#include <sys/time.h>
 //#include <sys/types.h>
 //#include <ctype.h>
 #include <fcntl.h>

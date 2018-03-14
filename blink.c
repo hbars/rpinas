@@ -14,33 +14,26 @@
 #include "blink.h"
 
 // blink
-void blink(gdelay) {
-static int tm_delay = 0;
+int blink() {
+int ret;
 static int blink_flag = 1;
 
 if (!run) {
     // led on
     digitalWrite(BLINK_LED, 0);
-    delay(gdelay);
-    return;
+    ret = onesec();
+    return (ret);
     }
-
-if (tm_delay <= BLINK_DELAY && blink_flag) {
-    tm_delay++;
-    if(tm_delay == BLINK_DELAY) {
+if (blink_flag) {
 	// on
 	digitalWrite(BLINK_LED, 0);
 	blink_flag = 0;
-	}
     }
-else if (!blink_flag) {
-    tm_delay--;
-    if(tm_delay == 0) {
+else {
 	// off
         digitalWrite(BLINK_LED, 1);
 	blink_flag = 1;
-	}
     }
-    delay(gdelay);
-    return;
+    ret = onesec();
+    return (ret);
 }
