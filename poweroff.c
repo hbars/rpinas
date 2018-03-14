@@ -14,11 +14,11 @@
 #include "common.h"
 #include "poweroff.h"
 
-void rpi_shutdown (int fd) {
+void rpi_shutdown () {
 int ret1,ret2;
 
-ret1 = pwch1 (fd);
-ret2 = pwch2 (fd);
+ret1 = pwch1 ();
+ret2 = pwch2 ();
 if (ret2 == LEFT) {
     lcdClear (fd);
     return;
@@ -27,14 +27,14 @@ if (ret2 == LEFT) {
 if (ret1 == UP)
     {
 // reboot
-    byebye (fd);
+    byebye ();
     system ("/sbin/reboot");
     exit (EXIT_SUCCESS);
     }
 else
     {
 // poweroff
-    byebye (fd);
+    byebye ();
     system ("/sbin/poweroff");
     exit (EXIT_SUCCESS);
     }
@@ -42,7 +42,7 @@ else
 return;
 }
 
-int pwch1 (int fd) {
+int pwch1 () {
 
     lcdClear (fd);
     lcdPosition (fd, 1, 0) ;
@@ -50,24 +50,24 @@ int pwch1 (int fd) {
     lcdPosition (fd, 1, 1) ;
     lcdPrintf (fd, "POWEROFF:") ;
 
-    return UPorDOWN (fd,12);
+    return UPorDOWN (12);
 }
 
-int pwch2 (int fd) {
+int pwch2 () {
 
     lcdClear (fd);
     lcdPosition (fd, 1, 0) ;
     lcdPrintf (fd, "A YOU SHURE: N") ;
 
-    return YorN (fd,14,0);
+    return YorN (14,0);
 }
 
-void byebye (int fd) {
+void byebye () {
 
     lcdClear (fd);
     lcdPosition (fd, 1, 0) ;
     lcdPrintf (fd, " BYE, BYE...") ;
     delay (250) ;
     lcdClear (fd);
-    ledOff (fd, 0, DISP_RANGE);
+    ledOff (0, DISP_RANGE);
 }

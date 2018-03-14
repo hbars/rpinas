@@ -16,12 +16,12 @@
 
 #include "includes.h"
 
-#define VERSION "1.2"
+#define VERSION "1.3"
 
-void ledOff (int fd, int min, int max);
-void ledOn (int fd, int min, int max);
-void disp_time (int fd);
-void rpi_shutdown (int fd);
+void ledOff (int min, int max);
+void ledOn (int min, int max);
+void disp_time (void);
+void rpi_shutdown (void);
 
 void selectInterrupt (void);
 void resetInterrupt (void);
@@ -30,12 +30,12 @@ void rightInterrupt (void);
 void upInterrupt (void);
 void downInterrupt (void);
 
-int pwch1 (int fd);
-int pwch2 (int fd);
-void byebye (int fd);
+int pwch1 (void);
+int pwch2 (void);
+void byebye (void);
 
-int YorN (int fd, int x, int y);
-int UPorDOWN (int fd, int x);
+int YorN (int x, int y);
+int UPorDOWN (int x);
 
 volatile int buttonRes;
 volatile int bounceCounter;
@@ -50,10 +50,10 @@ struct ifinfo {
 typedef struct ifinfo IFINFO;
 
 IFINFO *IfInfo (char *ifname);
-void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd);
+void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed);
 
 int blink (void);
-int selfunc (int fd);
+int selfunc (void);
 
 char *sprint_uptime(void);
 void disp_uptime(void);

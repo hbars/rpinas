@@ -16,7 +16,6 @@
 // blink
 int blink() {
 int ret;
-static int blink_flag = 1;
 
 if (!run) {
     // led on
@@ -24,16 +23,12 @@ if (!run) {
     ret = onesec();
     return (ret);
     }
-if (blink_flag) {
-	// on
-	digitalWrite(BLINK_LED, 0);
-	blink_flag = 0;
-    }
-else {
-	// off
-        digitalWrite(BLINK_LED, 1);
-	blink_flag = 1;
-    }
+
+if (!digitalRead(BLINK_LED)) {
+    digitalWrite(BLINK_LED, 1);
+} else {
+    digitalWrite(BLINK_LED, 0);
+}
     ret = onesec();
     return (ret);
 }

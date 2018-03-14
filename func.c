@@ -20,7 +20,7 @@ struct timeval timeout = {1, 0};
     return (retval);
 }
 
-void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int fd) {
+void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed) {
     lcdClear (fd);
     lcdPosition (fd, 0, 0) ;
     lcdPrintf (fd, "%s%s", ifname, ip) ;
@@ -28,7 +28,7 @@ void LCDprintIfInfo (char *ifname, char *ip, float rx_speed, float tx_speed, int
     lcdPrintf (fd, "%.1f<>%.1f", (float)rx_speed, (float)tx_speed) ;
 }
 /////////////////////////////////////////////////////////////
-void disp_time (int fd) {
+void disp_time () {
 char buf [30];
 time_t tim = time(NULL);
 struct tm *t = localtime (&tim);
@@ -84,7 +84,7 @@ if (getifaddrs(&ifaddr) == -1) {
 return (ifinfo);
 }
 
-int selfunc (int fd) {
+int selfunc () {
 int lfunc = sizeof(func)/sizeof(*func)-1;
 int s = lfunc;
 
@@ -115,7 +115,7 @@ for(;;) {
 }
 
 // Yes or No LCD set 
-int YorN (int fd, int x, int y) {
+int YorN (int x, int y) {
 int ret = LEFT;
 
 lcdPosition (fd, x+1, y);
@@ -188,7 +188,7 @@ while (buttonRes == -1) {
 }
 
 // UP or DOWN LCD set 
-int UPorDOWN (int fd, int x) {
+int UPorDOWN (int x) {
 int ret = UP;
 
 lcdPosition (fd, x, 0);
@@ -214,7 +214,7 @@ for(;;) {
     }
 }
 
-void ledOff (int fd, int min, int max) {
+void ledOff (int min, int max) {
 int i;
 
 for (i = max; i >= min; --i)
@@ -224,7 +224,7 @@ for (i = max; i >= min; --i)
     }
 }
 
-void ledOn (int fd, int min, int max) {
+void ledOn (int min, int max) {
 int i;
 
 for (i = min; i <= max; ++i)

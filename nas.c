@@ -112,7 +112,7 @@ lcdPosition (fd, 0, 0) ;
 lcdPrintf (fd, " RPi NAS v%s", VERSION) ;
 lcdPosition (fd, 0, 1) ;
 lcdPrintf (fd, " was loaded ...") ;
-ledOn(fd, 0, DISP_RANGE);
+ledOn(0, DISP_RANGE);
 delay (1000) ;
 lcdClear (fd);
 lcdPosition (fd, 0, 0) ;
@@ -132,12 +132,12 @@ for (;;)
     if (buttonRes != -1 && disp_flag)
 	{
 	ttim = tim + DISP_FLASH_TIME;
-	ledOn(fd, 0, disp_r);
+	ledOn(0, disp_r);
 	disp_flag = 0;
 	}
     if ((tim > ttim) && !disp_flag && run)
 	{
-	ledOff(fd, 0, disp_r);
+	ledOff(0, disp_r);
 	disp_flag = 1;
 	}
 
@@ -175,11 +175,11 @@ for (;;)
 	c = 0;
     break;
     case SELECT:
-	f=selfunc(fd);
-	ledOn(fd, disp_r, disp_r);
+	f=selfunc();
+	ledOn(disp_r, disp_r);
 	switch (f) {
 	    case 0: // SYSTEM
-		rpi_shutdown (fd);
+		rpi_shutdown ();
 	    break;
 	    case 1: // WLAN INFO
 		disp_iwinfo();
@@ -199,7 +199,7 @@ for (;;)
 	    switch (i) {
 	        case 0:
 		    if (c <= DTIME) {
-			disp_time(fd) ;
+			disp_time() ;
 		    } else {
 			i++;
 			c=0;
@@ -226,7 +226,7 @@ for (;;)
 
 			rx_speed = (float)((bin - rx_old_eth)*8/timedelta)/1000;
 			tx_speed = (float)((bout - tx_old_eth)*8/timedelta)/1000;
-			LCDprintIfInfo ("E", ifinfo->ip, rx_speed, tx_speed, fd);
+			LCDprintIfInfo ("E", ifinfo->ip, rx_speed, tx_speed);
 			rx_old_eth = bin;
 			tx_old_eth = bout;
 			t_last_eth = t_now;
@@ -258,7 +258,7 @@ for (;;)
 
 			rx_speed = (float)((bin - rx_old_wlan)*8/timedelta)/1000;
 			tx_speed = (float)((bout - tx_old_wlan)*8/timedelta)/1000;
-			LCDprintIfInfo ("W", ifinfo->ip, rx_speed, tx_speed, fd);
+			LCDprintIfInfo ("W", ifinfo->ip, rx_speed, tx_speed);
 			rx_old_wlan = bin;
 			tx_old_wlan = bout;
 			t_last_wlan = t_now;
@@ -270,7 +270,7 @@ for (;;)
 			}
 	        break;
 	        default:   // MAX_INST
-		    disp_time(fd);
+		    disp_time();
 		    i = 0;
 		    c = 0;
 	    }
