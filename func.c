@@ -13,7 +13,7 @@
 #include "common.h"
 #include "func.h"
 
-int onesec(void) {
+int onesec() {
 int retval;
 struct timeval timeout = {1, 0};
     retval = select(1, NULL, NULL, NULL, &timeout);

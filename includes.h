@@ -20,6 +20,10 @@
 #define INCLUDES_H
 
 /* Include possible build time configuration before including anything else */
+#ifdef HAVE_CONFIG_H
+#include "conf.h"
+#endif
+
 #include "config.h"
 
 #define _GNU_SOURCE     /* To get defns of NI_MAXSERV and NI_MAXHOST */

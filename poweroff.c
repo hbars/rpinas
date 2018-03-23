@@ -28,14 +28,14 @@ if (ret1 == UP)
     {
 // reboot
     byebye ();
-    system ("/sbin/reboot");
+    system (REBOOT);
     exit (EXIT_SUCCESS);
     }
 else
     {
 // poweroff
     byebye ();
-    system ("/sbin/poweroff");
+    system (POWEROFF);
     exit (EXIT_SUCCESS);
     }
 

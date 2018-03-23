@@ -16,8 +16,6 @@
 
 #include "includes.h"
 
-#define VERSION "1.3"
-
 void ledOff (int min, int max);
 void ledOn (int min, int max);
 void disp_time (void);

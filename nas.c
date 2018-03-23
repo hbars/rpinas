@@ -40,7 +40,7 @@ int f; //select swith
 unsigned int i = 0; // swich block
 unsigned int c = 0; // distlay time counter
 
-//printf ("RPi NAS v %s\n", VERSION) ;
+//printf ("RPi NAS v %s\n", VERSION);
 
 if (wiringPiSetup () == -1) {
     fprintf (stderr, "GPIO Setup failed! %s\n", strerror (errno));
