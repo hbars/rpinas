@@ -164,23 +164,32 @@ void disp_iwinfo(){
 int disp_flag = 1;
 
 lcdClear(fd);
-lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, essid));
+IFINFO *ifinfo = IfInfo(WLANx);
+if(ifinfo->ip == NULL){
+    free (ifinfo);
+    lcdPrintf(fd, "No interface");
+    lcdPosition(fd, 0, 1);
+    lcdPrintf(fd, "%s", WLANx);
+    return;
+}
+
+lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, IW" %s link", ssid));
 lcdPosition(fd, 0, 1);
-lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
+lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, IW" %s link", signal));
 
 while (buttonRes == -1) {
     if (disp_flag) {
 	    disp_flag = 0;
 	    lcdClear(fd);
-	    lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, essid));
+	    lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, IW" %s link", ssid));
 	    lcdPosition(fd, 0, 1);
-	    lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, quality));
+	    lcdPrintf(fd, "SIG:%s", getiwinfo(WLANx, IW" %s link", signal));
 	}
     else if (!disp_flag) {
 	    lcdClear(fd);
-	    lcdPrintf(fd, "RATE :%s", getiwinfo(WLANx, rate));
+	    lcdPrintf(fd, "RA :%s", getiwinfo(WLANx, IW" %s link", bitrate));
 	    lcdPosition(fd, 0, 1);
-	    lcdPrintf(fd, "LEVEL:%s", getiwinfo(WLANx, level));
+	    lcdPrintf(fd, "TXP:%s", getiwinfo(WLANx, IW" %s info", txpower));
 	    disp_flag = 1;
     }
     (void)blink();

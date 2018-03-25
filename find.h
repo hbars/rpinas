@@ -10,26 +10,9 @@
  *
  * See README and COPYING for more details.
  */
-#include "common.h"
-#include "blink.h"
 
-// blink
-int blink() {
-int ret;
+#ifndef FIND_H
+#define FIND_H
 
-if (!run) {
-    // led on
-    digitalWrite(BLINK_LED, 0);
-    ret = onesec();
-    return (ret);
-    }
 
-if (!digitalRead(BLINK_LED)) {
-    digitalWrite(BLINK_LED, 1);
-} else {
-    digitalWrite(BLINK_LED, 0);
-}
-    ret = onesec();
-
-    return (ret);
-}
+#endif /* FIND_H */

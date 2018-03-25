@@ -8,4 +8,6 @@ apt install wiringpi
 and edit config.h
 
 Then to compile type:
-    make
+./configure
+make
+sudo make install

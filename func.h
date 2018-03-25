@@ -15,17 +15,10 @@
 #define FUNC_H
 static const char *func[] = {"SYSTEM", "WLAN INFO", "UPTIME", "MENU EXIT"};
 
-static const char *quality = IWCONFIG" %s|grep -i 'quality'|\
-    sed 's/.*lity=\\([0-9]*\\/[0-9]*\\).*/\\1/'";
-
-static const char *essid = IWCONFIG" %s|grep -i 'essid'|\
-    sed 's/.*\\\"\\(.*\\)\\\"\\ .*/\\1/'";
-
-static const char *rate = IWCONFIG" %s|grep -i 'rate'|\
-    sed 's/.*ate\\:\\(.*\\/s\\)\\ .*/\\1/'";
-
-static const char *level = IWCONFIG " %s|grep -i 'level'|\
-    sed 's/.*evel=\\([0-9]*\\/[0-9]*\\)\\ .*/\\1/'";
+static const char *ssid = "\\s(SSID:)\\s(.+)";
+static const char *signal = "\\s(signal:)\\s(.+)";
+static const char *bitrate = "\\s(tx bitrate:)\\s(.+)";
+static const char *txpower = "\\s(txpower)\\s(.+)";
 
 
 #endif /* FUNC_H */

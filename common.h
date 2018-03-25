@@ -16,6 +16,17 @@
 
 #include "includes.h"
 
+/* define boolean type if needed */
+#ifndef HAVE_BOOLEAN
+typedef int boolean;
+#endif
+#ifndef FALSE                   /* in case these macros already exist */
+#define FALSE   0               /* values of boolean */
+#endif
+#ifndef TRUE
+#define TRUE    1
+#endif
+
 void ledOff (int min, int max);
 void ledOn (int min, int max);
 void disp_time (void);
@@ -55,9 +66,10 @@ int selfunc (void);
 
 char *sprint_uptime(void);
 void disp_uptime(void);
-char *getiwinfo(char *iwname, const char *req);
+char *getiwinfo(char *iwname, const char *req, const char *pattern);
 void disp_iwinfo(void);
 
 int onesec(void);
+char *strmatch_regex(const char *chk_string, const char *pattern);
 
 #endif /* COMMON_H */
