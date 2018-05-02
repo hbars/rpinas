@@ -96,7 +96,7 @@ while (1) {
 				break;
 			default:
 				print_help();
-				exit(EXIT_FAILURE);
+				exit(EXIT_SUCCESS);
 	}
 }
 
