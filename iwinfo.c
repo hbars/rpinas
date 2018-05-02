@@ -26,7 +26,10 @@ setlocale(LC_MESSAGES,"C");
 if ((ptr = popen(bufcmd, "r")) != NULL) {
     while ((fgets(buf, BUFSIZ, ptr) != NULL && !feof(ptr)) 
     && (res = strmatch_regex(buf, pattern)) == NULL) {
-	if( ferror(ptr) ) { perror("fgets"); break; }
+	if( ferror(ptr) ) { 
+	    lprintf(LOG_ERR, "fgets: %s", strerror (errno));
+	    break;
+	    }
 	}
     (void) pclose(ptr);
     }

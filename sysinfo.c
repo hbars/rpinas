@@ -33,13 +33,13 @@ static char buf[BUFSIZE];
 #define FILE_TO_BUF(filename, fd) do{				\
     static int local_n;						\
     if (fd == -1 && (fd = open(filename, O_RDONLY)) == -1) {	\
-	fprintf(stderr, BAD_OPEN_MESSAGE);			\
+	lprintf(LOG_ERR, BAD_OPEN_MESSAGE);			\
 	fflush(NULL);						\
 	_exit(102);						\
     }								\
     lseek(fd, 0L, SEEK_SET);					\
     if ((local_n = read(fd, buf, sizeof buf - 1)) < 0) {	\
-	perror(filename);					\
+	lprintf(LOG_ERR, "read error: %s, %s", filename, strerror (errno));\
 	fflush(NULL);						\
 	_exit(103);						\
     }								\
@@ -59,7 +59,7 @@ int uptime(double *uptime_secs, double *idle_secs) {
     setlocale(LC_NUMERIC,"C");
     if (sscanf(buf, "%lf %lf", &up, &idle) < 2) {
         setlocale(LC_NUMERIC,savelocale);
-        fprintf(stderr, "bad data in " UPTIME_FILE "\n");
+        lprintf(LOG_ERR, "bad data in " UPTIME_FILE "\n");
         return 0;
     }
     setlocale(LC_NUMERIC,savelocale);

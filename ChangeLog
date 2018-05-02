@@ -1,0 +1,7 @@
+v2.0
+Wed May  2 22:37:27 +03 2018
+
+add daemonize
+add syslog
+
+same code fixes

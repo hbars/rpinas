@@ -16,7 +16,7 @@
 static const char *func[] = {"SYSTEM", "WLAN INFO", "UPTIME", "MENU EXIT"};
 
 static const char *ssid = "\\s(SSID:)\\s(.+)";
-static const char *signal = "\\s(signal:)\\s(.+)";
+static const char *sig_level = "\\s(signal:)\\s(.+)";
 static const char *bitrate = "\\s(tx bitrate:)\\s(.+)";
 static const char *txpower = "\\s(txpower)\\s(.+)";
 

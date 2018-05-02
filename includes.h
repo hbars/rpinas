@@ -35,9 +35,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <locale.h>
-
 #include <sys/types.h>
-//#include <ctype.h>
+#include <ctype.h>
 #include <fcntl.h>
 
 #if TIME_WITH_SYS_TIME
@@ -52,14 +51,10 @@
 #endif
 
 #include <regex.h>
-
-/*
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-
+#include <getopt.h>
 #include <signal.h>
-*/
+#include <syslog.h>
+
 // getifaddrs
 #include <ifaddrs.h>
 #include <netdb.h>

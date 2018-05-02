@@ -14,7 +14,21 @@
 #include "common.h"
 #include "nas.h"
 
+static void print_help(void)
+{
+printf("nas v" VERSION " -- nas control for embedded system\n"
+	       "\n"
+	       "Usage: nas [options]\n"
+	       "\n"
+	       "  -n, --foreground       Run in foreground, do not detach from controlling terminal\n"
+	       "  -s, --syslog           Use syslog for logging, even if running in the foreground\n"
+	       "  -v, --verbose          Verbose messages\n"
+	       "  -h, --help             This help text\n"
+	       "\n");
+}
+
 int main (int argc, char *argv[]) {
+
 int disp_r = DISP_RANGE;
 time_t tim;
 time_t ttim = 0;
@@ -40,12 +54,67 @@ int f; //select swith
 unsigned int i = 0; // swich block
 unsigned int c = 0; // distlay time counter
 
-//printf ("RPi NAS v %s\n", VERSION);
+struct sigaction sig;
+char   *__progname;
+
+char short_options[] = "nsvh";
+struct option long_options[] = {
+	{ "foreground", 0, 0, 'n' },
+	{ "syslog", 0, 0, 's' },
+	{ "verbose", 0, 0, 'v' },
+	{ "help", 0, 0, 'h' },
+	{ NULL, 0, 0, 0 }
+};
+int option_index = 1;
+
+/* Prevent TERM and HUP signals from interrupting system calls */
+sig.sa_handler = handle_signal;
+sigemptyset (&sig.sa_mask);
+sig.sa_flags = SA_RESTART;
+sigaction(SIGTERM, &sig, NULL);
+sigaction(SIGHUP, &sig, NULL);
+
+g_daemon = 1;
+g_verbose = 0;
+g_syslog = 0;
+
+/* Parse commandline options */
+while (1) {
+	c = getopt_long(argc, argv, short_options, long_options, &option_index);
+	if (c == -1)
+		break;
+
+	switch (c) {
+			case 'n':
+				g_daemon = 0;
+				break;
+			case 's':
+				g_syslog = 1;
+				break;
+			case 'v':
+				g_verbose = 1;
+				break;
+			default:
+				print_help();
+				exit(EXIT_FAILURE);
+	}
+}
+
+if (g_daemon) {
+	lprintf(LOG_DEBUG, "Daemonizing ...");
+	if (-1 == daemon(0, 0)) {
+		lprintf(LOG_ERR, "Failed daemonizing: %m");
+		return 1;
+	}
+	openlog(__progname, LOG_CONS | LOG_PID, LOG_DAEMON);
+}
+
+lprintf (LOG_INFO, "RPi NAS v %s\n", VERSION);
 
 if (wiringPiSetup () == -1) {
-    fprintf (stderr, "GPIO Setup failed! %s\n", strerror (errno));
+    lprintf (LOG_ERR, "GPIO Setup failed! %s\n", strerror (errno));
     exit (EXIT_FAILURE);
-  }
+}
 
 // configure buttons pins
 pinMode (ENTER, INPUT) ;
@@ -64,32 +133,32 @@ pullUpDnControl (DOWN, PUD_UP) ;
 
 if (wiringPiISR (ENTER, INT_EDGE_FALLING, &selectInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (SELECT, INT_EDGE_FALLING, &resetInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (LEFT, INT_EDGE_FALLING, &leftInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (RIGHT, INT_EDGE_FALLING, &rightInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (UP, INT_EDGE_FALLING, &upInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (DOWN, INT_EDGE_FALLING, &downInterrupt) < 0)
   {
-    fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 
@@ -97,13 +166,13 @@ if (wiringPiISR (DOWN, INT_EDGE_FALLING, &downInterrupt) < 0)
 fd = lcdInit (2,16,4, RS,EN, DB4,DB5,DB6,DB7,0,0,0,0) ;
 if (fd == -1)
   {
-    fprintf (stderr, "lcdInit 1 failed: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "lcdInit 1 failed: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 
 if (softPwmCreate (DISP_LED, 0, DISP_RANGE) < 0)
   {
-    fprintf (stderr, "Unable to setup PWM: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup PWM: %s\n", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 
@@ -125,7 +194,9 @@ t_last_wlan=t_last_eth;
 tim = time (NULL);
 ttim = tim + DISP_FLASH_TIME;
 buttonRes = -1;
-for (;;)
+g_quit = 0;
+
+while (!g_quit)
 {
     gettimeofday(&t_now, NULL);
     tim = time (NULL) ;

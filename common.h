@@ -27,6 +27,20 @@ typedef int boolean;
 #define TRUE    1
 #endif
 
+#ifndef UNUSED
+#define UNUSED(x) x __attribute__((unused))
+#endif
+
+#define lprintf(level, format...)				\
+	do {							\
+		if (g_verbose || (level != LOG_DEBUG)) {	\
+			if (g_daemon || g_syslog)		\
+				syslog(level, format);		\
+			else					\
+				fprintf(stderr, format);	\
+		}						\
+	} while (0)
+
 void ledOff (int min, int max);
 void ledOn (int min, int max);
 void disp_time (void);
@@ -50,6 +64,10 @@ volatile int buttonRes;
 volatile int bounceCounter;
 int fd;
 int run;
+int g_quit;
+int g_daemon;
+int g_verbose;
+int g_syslog;
 
 struct ifinfo {
     char *ip;
@@ -71,5 +89,7 @@ void disp_iwinfo(void);
 
 int onesec(void);
 char *strmatch_regex(const char *chk_string, const char *pattern);
+
+void handle_signal(int UNUSED(signo));
 
 #endif /* COMMON_H */

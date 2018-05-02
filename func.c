@@ -13,6 +13,14 @@
 #include "common.h"
 #include "func.h"
 
+void handle_signal(int UNUSED(signo))
+{
+    ledOff(0, DISP_RANGE);
+    lcdClear (fd);
+    digitalWrite(BLINK_LED, 1);
+    g_quit = 1;
+}
+
 int onesec() {
 int retval;
 struct timeval timeout = {1, 0};
@@ -49,13 +57,13 @@ int family, s, n;
 char host[NI_MAXHOST];
 IFINFO *ifinfo = (IFINFO*)malloc(sizeof(IFINFO));
 if (!ifinfo) {
-    fprintf(stderr, "Out of memory.\n");
+    lprintf(LOG_ERR, "Out of memory.\n");
     exit(EXIT_FAILURE);
 }
 ifinfo->ip = NULL;
 
 if (getifaddrs(&ifaddr) == -1) {
-    perror("getifaddrs");
+    lprintf(LOG_ERR, "getifaddrs: %s\n", strerror (errno));
     exit(EXIT_FAILURE);
     }
 /* Walk through linked list, maintaining head pointer so we
@@ -71,7 +79,7 @@ if (getifaddrs(&ifaddr) == -1) {
                            host, NI_MAXHOST,
                            NULL, 0, NI_NUMERICHOST);
                    if (s != 0) {
-                       printf("getnameinfo() failed: %s\n", gai_strerror(s));
+                       lprintf(LOG_ERR, "getnameinfo() failed: %s\n", gai_strerror(s));
                        exit(EXIT_FAILURE);
                    }
 		    ifinfo->ip = (char*)strdup(host);
@@ -84,8 +92,10 @@ if (getifaddrs(&ifaddr) == -1) {
 return (ifinfo);
 }
 
+#define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
+
 int selfunc () {
-int lfunc = sizeof(func)/sizeof(*func)-1;
+int lfunc = ARRAY_SIZE(func)-1;
 int s = lfunc;
 
 lcdClear (fd);
@@ -175,7 +185,7 @@ if(ifinfo->ip == NULL){
 
 lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, IW" %s link", ssid));
 lcdPosition(fd, 0, 1);
-lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, IW" %s link", signal));
+lcdPrintf(fd, "SQ:%s", getiwinfo(WLANx, IW" %s link", sig_level));
 
 while (buttonRes == -1) {
     if (disp_flag) {
@@ -183,11 +193,11 @@ while (buttonRes == -1) {
 	    lcdClear(fd);
 	    lcdPrintf(fd, "ID:%s", getiwinfo(WLANx, IW" %s link", ssid));
 	    lcdPosition(fd, 0, 1);
-	    lcdPrintf(fd, "SIG:%s", getiwinfo(WLANx, IW" %s link", signal));
+	    lcdPrintf(fd, "SIG:%s", getiwinfo(WLANx, IW" %s link", sig_level));
 	}
     else if (!disp_flag) {
 	    lcdClear(fd);
-	    lcdPrintf(fd, "RA :%s", getiwinfo(WLANx, IW" %s link", bitrate));
+	    lcdPrintf(fd, "RA: %s", getiwinfo(WLANx, IW" %s link", bitrate));
 	    lcdPosition(fd, 0, 1);
 	    lcdPrintf(fd, "TXP:%s", getiwinfo(WLANx, IW" %s info", txpower));
 	    disp_flag = 1;
