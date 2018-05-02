@@ -59,7 +59,7 @@ int uptime(double *uptime_secs, double *idle_secs) {
     setlocale(LC_NUMERIC,"C");
     if (sscanf(buf, "%lf %lf", &up, &idle) < 2) {
         setlocale(LC_NUMERIC,savelocale);
-        lprintf(LOG_ERR, "bad data in " UPTIME_FILE "\n");
+        lprintf(LOG_ERR, "bad data in " UPTIME_FILE);
         return 0;
     }
     setlocale(LC_NUMERIC,savelocale);

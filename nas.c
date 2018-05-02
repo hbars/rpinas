@@ -101,18 +101,25 @@ while (1) {
 }
 
 if (g_daemon) {
+	openlog(__progname, LOG_CONS | LOG_PID, LOG_DAEMON);
 	lprintf(LOG_DEBUG, "Daemonizing ...");
+	if (access(PID_FILE, F_OK) == 0) {
+		lprintf(LOG_ERR, "pid %s exist", PID_FILE);
+		closelog();
+		exit (EXIT_FAILURE);
+	}
 	if (-1 == daemon(0, 0)) {
 		lprintf(LOG_ERR, "Failed daemonizing: %m");
-		return 1;
+		closelog();
+		exit (EXIT_FAILURE);
 	}
-	openlog(__progname, LOG_CONS | LOG_PID, LOG_DAEMON);
+	SetPidFile(PID_FILE);
 }
 
-lprintf (LOG_INFO, "RPi NAS v %s\n", VERSION);
+lprintf (LOG_INFO, "RPi NAS v %s", VERSION);
 
 if (wiringPiSetup () == -1) {
-    lprintf (LOG_ERR, "GPIO Setup failed! %s\n", strerror (errno));
+    lprintf (LOG_ERR, "GPIO Setup failed! %s", strerror (errno));
     exit (EXIT_FAILURE);
 }
 
@@ -133,32 +140,32 @@ pullUpDnControl (DOWN, PUD_UP) ;
 
 if (wiringPiISR (ENTER, INT_EDGE_FALLING, &selectInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (SELECT, INT_EDGE_FALLING, &resetInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (LEFT, INT_EDGE_FALLING, &leftInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (RIGHT, INT_EDGE_FALLING, &rightInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (UP, INT_EDGE_FALLING, &upInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 if (wiringPiISR (DOWN, INT_EDGE_FALLING, &downInterrupt) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup ISR: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup ISR: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 
@@ -166,13 +173,13 @@ if (wiringPiISR (DOWN, INT_EDGE_FALLING, &downInterrupt) < 0)
 fd = lcdInit (2,16,4, RS,EN, DB4,DB5,DB6,DB7,0,0,0,0) ;
 if (fd == -1)
   {
-    lprintf (LOG_ERR, "lcdInit 1 failed: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "lcdInit 1 failed: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 
 if (softPwmCreate (DISP_LED, 0, DISP_RANGE) < 0)
   {
-    lprintf (LOG_ERR, "Unable to setup PWM: %s\n", strerror (errno)) ;
+    lprintf (LOG_ERR, "Unable to setup PWM: %s", strerror (errno)) ;
     exit (EXIT_FAILURE);
   }
 

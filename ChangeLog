@@ -5,3 +5,7 @@ add daemonize
 add syslog
 
 same code fixes
+
+v2.1
+
+add pid file

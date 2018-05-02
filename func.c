@@ -13,11 +13,33 @@
 #include "common.h"
 #include "func.h"
 
+void SetPidFile(char* Filename)
+{
+    FILE* f;
+
+    f = fopen(Filename, "w+");
+    if (f)
+    {
+        fprintf(f, "%u", getpid());
+        fclose(f);
+    } else {
+	lprintf(LOG_ERR, "can't create pid file: %s %s", PID_FILE, strerror (errno));
+	closelog();
+	exit (EXIT_FAILURE);
+    }
+}
+
 void handle_signal(int UNUSED(signo))
 {
+    int ret;
     ledOff(0, DISP_RANGE);
     lcdClear (fd);
     digitalWrite(BLINK_LED, 1);
+    if ((unlink (PID_FILE)) == -1) {
+	lprintf(LOG_ERR, "unlink: %s %s", PID_FILE, strerror (errno));
+    }
+    lprintf(LOG_INFO, "nas exit");
+    closelog();
     g_quit = 1;
 }
 
@@ -57,13 +79,13 @@ int family, s, n;
 char host[NI_MAXHOST];
 IFINFO *ifinfo = (IFINFO*)malloc(sizeof(IFINFO));
 if (!ifinfo) {
-    lprintf(LOG_ERR, "Out of memory.\n");
+    lprintf(LOG_ERR, "Out of memory.");
     exit(EXIT_FAILURE);
 }
 ifinfo->ip = NULL;
 
 if (getifaddrs(&ifaddr) == -1) {
-    lprintf(LOG_ERR, "getifaddrs: %s\n", strerror (errno));
+    lprintf(LOG_ERR, "getifaddrs: %s", strerror (errno));
     exit(EXIT_FAILURE);
     }
 /* Walk through linked list, maintaining head pointer so we
@@ -79,7 +101,7 @@ if (getifaddrs(&ifaddr) == -1) {
                            host, NI_MAXHOST,
                            NULL, 0, NI_NUMERICHOST);
                    if (s != 0) {
-                       lprintf(LOG_ERR, "getnameinfo() failed: %s\n", gai_strerror(s));
+                       lprintf(LOG_ERR, "getnameinfo() failed: %s", gai_strerror(s));
                        exit(EXIT_FAILURE);
                    }
 		    ifinfo->ip = (char*)strdup(host);

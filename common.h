@@ -91,5 +91,6 @@ int onesec(void);
 char *strmatch_regex(const char *chk_string, const char *pattern);
 
 void handle_signal(int UNUSED(signo));
+void SetPidFile(char* Filename);
 
 #endif /* COMMON_H */

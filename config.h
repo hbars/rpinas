@@ -54,4 +54,6 @@ see "gpio readall"
 #define ETHTIME 5 // ethernet in sec
 #define WLANTIME 7 // wlan in sec
 
+#define PID_FILE "/run/nas.pid"
+
 #endif /* CONFIG_H */

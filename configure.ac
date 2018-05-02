@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([nas], [2.0], [hbars@bk.ru])
+AC_INIT([nas], [2.1], [hbars@bk.ru])
 AM_INIT_AUTOMAKE([1.11 foreign])
 AM_SILENT_RULES([yes])
 

@@ -26,7 +26,9 @@
 
 #include "config.h"
 
-#define _GNU_SOURCE     /* To get defns of NI_MAXSERV and NI_MAXHOST */
+#if !defined(_GNU_SOURCE)
+        #define _GNU_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
